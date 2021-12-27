@@ -1,5 +1,49 @@
 <script lang="ts">
-    import {todo, todos} from '../stores/store'
+import {todo, todos} from '../stores/store'
+import SignInWithButton from '../components/signInWithButton.svelte';
+import SignOutButton from '../components/signOutButton.svelte'
+import authStore from '../stores/authStore';
+
+// Import the functions you need from the SDKs you need
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+
+import { onMount } from 'svelte';
+import { goto } from '$app/navigation';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+
+onMount(() => {
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPnufv66-aulUTV_s28VzHYMZoifPWRd8",
+  authDomain: "svelte-todo-auth.firebaseapp.com",
+  projectId: "svelte-todo-auth",
+  storageBucket: "svelte-todo-auth.appspot.com",
+  messagingSenderId: "338670011707",
+  appId: "1:338670011707:web:a11b2774dc0db82142231e"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+
+        firebase.auth().onAuthStateChanged((user) => {
+  authStore.set({
+    isLoggedIn: user !== null,
+    user,
+    firebaseControlled: true,
+  });
+});
+    })
+
+
+
+    authStore.subscribe(async ({ isLoggedIn, firebaseControlled }) => {
+  if (!isLoggedIn && firebaseControlled) {
+    await goto("/login");
+  }
+});
     
 const addTodo = async () => {
     $todos = [...$todos, {
@@ -11,6 +55,11 @@ const addTodo = async () => {
 
 const completeTodo = (e) => {
     e.target.completed = true
+}
+
+const checkLogin = () => {
+   let user = firebase.auth().currentUser;
+   console.log(user)
 }
 
 </script>
@@ -40,5 +89,9 @@ const completeTodo = (e) => {
 {/if}
 {/each}
 </div>
+
+
+<button on:click={checkLogin}>Test</button>
+<SignOutButton/>
 
 </div>
