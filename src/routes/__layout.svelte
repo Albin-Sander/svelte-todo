@@ -1,7 +1,10 @@
 <script lang="ts">
     import '../app.css';
+    import Nav from '../components/nav.svelte';
 
 </script>
 <div class="p-8 max-w-6xl mx-auto flex justify-center">
+    
 <slot></slot>
+<Nav/>
 </div>
